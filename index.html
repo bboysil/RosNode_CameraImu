@@ -40,6 +40,10 @@
           window.alert("acceleration measurements Not supported.");
         }
 
+        if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
+           DeviceMotionEvent.requestPermission();
+         }
+
         function deviceMotionHandler(eventData) {
           // Grab the acceleration from the results
           var acceleration = eventData.acceleration;
@@ -122,27 +126,6 @@
               audio: false
             })
 
-          // getMedia(
-          //   {
-          //     video: true,
-          //     audio: false
-          //   },
-          //   function(stream) {
-          //     cameraStream = stream;
-          //     if (navigator.mozGetUserMedia) {
-          //       video.mozSrcObject = stream;
-          //     } else {
-          //       var vendorURL = window.URL || window.webkitURL;
-          //       video.src = vendorURL.createObjectURL(stream);
-          //     }
-          //     video.play();
-          //   },
-          //   function(err) {
-          //     console.log("An error occured! " + err);
-          //     window.alert("An error occured! " + err);
-          //   }
-          // );
-
 
           var constraints = { audio: false, video: true };
 
@@ -203,19 +186,19 @@
            z : quaternionpose.z,
            w : quaternionpose.w
         },
-        orientation_covariance : [0,0,0,0,0,0,0,0,0],
+        orientation_covariance : [0.09,0.09,0.09,0.09,0.09,0.09,0.09,0.09,0.09],
         angular_velocity : {
            x : vbeta,
            y : vgamma,
            z : valpha,
         },
-        angular_velocity_covariance  : [0,0,0,0,0,0,0,0,0],
+        angular_velocity_covariance  : [0.09,0.09,0.09,0.09,0.09,0.09,0.09,0.09,0.09],
         linear_acceleration : {
            x : x,
            y : y,
            z : z,
         },
-        linear_acceleration_covariance  : [0,0,0,0,0,0,0,0,0],
+        linear_acceleration_covariance  : [0.09,0.09,0.09,0.09,0.09,0.09,0.09,0.09,0.09],
      });
 
      imuTopic.publish(imuMessage);
@@ -227,10 +210,10 @@
           cameraOn();
           cameraTimer = setInterval(function(){
                 takepicture();
-           }, 100);       // publish an image 4 times per second
+           }, 100);       // publish an image 10 times per second
           imuTimer = setInterval(function(){
                 imusnapshot();
-           }, 5000);       // publish an IMU message 10 times per second
+           }, 1);       // publish an IMU message 30 times per second
            document.getElementById('startstopicon').setAttribute('src', RECORD_ON);
        } else {
            ros.close();
