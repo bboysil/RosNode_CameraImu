@@ -18,6 +18,7 @@
 
       if (window.DeviceMotionEvent) {
           window.addEventListener('devicemotion', deviceMotionHandler, false);
+          window.alert("Added MotionHandler");
         } else {
           window.alert("acceleration measurements Not supported.");
         }
@@ -213,7 +214,7 @@
           setTimeout(() => {
             cameraTimer = setInterval(function(){
                 takepicture();
-           }, 100);       // publish an image 10 times per second
+           }, 200);       // publish an image 5 times per second
           }, 1000);
           
           setTimeout(() => {
