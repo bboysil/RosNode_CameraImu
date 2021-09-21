@@ -28,7 +28,7 @@
 
 // setup event handler to capture the orientation event and store the most recent data in a variable
 
-      if (window.DeviceOrientationEvent) {
+      //if (window.DeviceOrientationEvent) {
         // Listen for the deviceorientation event and handle the raw data
         window.addEventListener('deviceorientation', function(eventData) {
           // gamma is the left-to-right tilt in degrees, where right is positive
@@ -41,7 +41,7 @@
           alpha = eventData.alpha
 
           }, false);
-        };
+        //};
 
 // setup event handler to capture the acceleration event and store the most recent data in a variable
 
@@ -58,7 +58,7 @@
           vgamma = rotation.gamma;  
           vbeta = rotation.beta;
           valpha = rotation.alpha;
-}
+        }
 
 
 // setup connection to the ROS server and prepare the topic
@@ -213,12 +213,14 @@
           setTimeout(() => {
             cameraTimer = setInterval(function(){
                 takepicture();
-           }, 1000);       // publish an image 10 times per second
+           }, 100);       // publish an image 10 times per second
           }, 1000);
           
+          setTimeout(() => {
           imuTimer = setInterval(function(){
                 imusnapshot();
-           }, 1000);       // publish an IMU message 30 times per second
+           }, 5);       // publish an IMU message 200 times per second
+          }, 1000);
            document.getElementById('startstopicon').setAttribute('src', RECORD_ON);
        } else {
            ros.close();
