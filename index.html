@@ -60,7 +60,7 @@
 
 
 // setup connection to the ROS server and prepare the topic
-  var ros = new ROSLIB.Ros();
+  var ros = new ROSLIB.Ros({url : 'ws://192.168.163.61:9090'});
 
   ros.on('connection', function() { console.log('Connected to websocket server.');});
 
