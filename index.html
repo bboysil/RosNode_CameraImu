@@ -61,9 +61,9 @@
 
     function AttachIMUHandlers()
     {
-      //if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
+      if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
            DeviceMotionEvent.requestPermission();
-         //}
+         }
 
       if (window.DeviceMotionEvent) {
           window.addEventListener('devicemotion', deviceMotionHandler, false);
