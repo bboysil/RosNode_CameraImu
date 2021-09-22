@@ -15,6 +15,17 @@
 
       var cameraTimer, imuTimer;
 
+      if (window.DeviceMotionEvent) {
+          window.addEventListener('devicemotion', deviceMotionHandler, false);
+        } else {
+          window.alert("acceleration measurements Not supported.");
+        }
+
+        if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
+           DeviceMotionEvent.requestPermission();
+         }
+
+
 // setup event handler to capture the orientation event and store the most recent data in a variable
 
       if (window.DeviceOrientationEvent) {
@@ -34,15 +45,6 @@
 
 // setup event handler to capture the acceleration event and store the most recent data in a variable
 
-        if (window.DeviceMotionEvent) {
-          window.addEventListener('devicemotion', deviceMotionHandler, false);
-        } else {
-          window.alert("acceleration measurements Not supported.");
-        }
-
-        if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
-           DeviceMotionEvent.requestPermission();
-         }
 
         function deviceMotionHandler(eventData) {
           // Grab the acceleration from the results
