@@ -217,14 +217,15 @@
   startstopicon.addEventListener('click', function(ev){
       if(cameraTimer == null) {
           ros.connect("ws://" + "192.168.163.61"+ ":9090");//window.location.hostname
-          cameraOn();
+
           setTimeout(() => {
-          cameraTimer = setInterval(function(){
-                takepicture();
-           }, 100);       // publish an image 10 times per second
-          imuTimer = setInterval(function(){
-                imusnapshot();
-           }, 10);       // publish an IMU message 30 times per second
+            cameraOn();
+            cameraTimer = setInterval(function(){
+                  takepicture();
+            }, 100);       // publish an image 10 times per second
+            imuTimer = setInterval(function(){
+                  imusnapshot();
+            }, 10);       // publish an IMU message 30 times per second
           }, 2000);
            document.getElementById('startstopicon').setAttribute('src', RECORD_ON);
        } else {
