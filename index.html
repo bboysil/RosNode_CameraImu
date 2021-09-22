@@ -53,15 +53,15 @@
 
       var cameraTimer, imuTimer;
 
+      if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
+           DeviceMotionEvent.requestPermission();
+         }
+
       if (window.DeviceMotionEvent) {
           window.addEventListener('devicemotion', deviceMotionHandler, false);
         } else {
           window.alert("acceleration measurements Not supported.");
         }
-
-        if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
-           DeviceMotionEvent.requestPermission();
-         }
 
 
 // setup event handler to capture the orientation event and store the most recent data in a variable
