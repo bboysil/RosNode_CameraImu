@@ -123,7 +123,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
 
 // request access to the video camera and start the video stream
   var hasRunOnce = false,
-      video        = document.querySelector('video'),
+      video        = document.querySelector('#video'),
       canvas       = document.querySelector('#canvas'),
       width = 640,
       height,           // calculated once video stream size is known
@@ -140,7 +140,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
               //var video = document.querySelector('video');
               video.srcObject = mediaStream;
               video.onloadedmetadata = function(e) {
-                video.play();
+                //video.play();
               };
             })
             .catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
@@ -173,14 +173,14 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
 
 // function that is run once scale the height of the video stream to match the configured target width
   video.addEventListener('canplay', function(ev){
-    //if (!ha//sRunOnce) {
-    //  height = video.videoHeight / (video.videoWidth/width);
-    //  video.setAttribute('width', width);
-    //  video.setAttribute('height', height);
-    //  canvas.setAttribute('width', width);
-    //  canvas.setAttribute('height', height);
-    //  hasRunOnce = true;
-    //}
+    if (!hasRunOnce) {
+      height = video.videoHeight / (video.videoWidth/width);
+      video.setAttribute('width', width);
+      video.setAttribute('height', height);
+      canvas.setAttribute('width', width);
+      canvas.setAttribute('height', height);
+      hasRunOnce = true;
+    }
   }, false);
 
 // function that is run by trigger several times a second
