@@ -92,6 +92,8 @@ function updateFieldIfNotNull(fieldName, value, precision=10){
     document.getElementById(fieldName).innerHTML = value.toFixed(precision);
 }
 
+var latesMotionEvent;
+
 function handleMotion(event) {
   updateFieldIfNotNull('Accelerometer_gx', event.accelerationIncludingGravity.x);
   updateFieldIfNotNull('Accelerometer_gy', event.accelerationIncludingGravity.y);
@@ -107,7 +109,7 @@ function handleMotion(event) {
   updateFieldIfNotNull('Gyroscope_x', event.rotationRate.beta);
   updateFieldIfNotNull('Gyroscope_y', event.rotationRate.gamma);
   incrementEventCount();
-  imusnapshot(event);
+  latesMotionEvent = event;
 }
 
 let is_running = false;
@@ -123,14 +125,16 @@ demo_button.onclick = function(e) {
     DeviceMotionEvent.requestPermission();
   }
   
-  if (is_running){
+  if (is_running) {
     window.removeEventListener("devicemotion", handleMotion);
     window.removeEventListener("deviceorientation", handleOrientation);
     demo_button.innerHTML = "Start demo";
     demo_button.classList.add('btn-success');
     demo_button.classList.remove('btn-danger');
     is_running = false;
-  }else{
+    stopCamera();
+    ros.close();
+  } else {
     window.addEventListener("devicemotion", handleMotion);
     window.addEventListener("deviceorientation", handleOrientation);
     document.getElementById("start_demo").innerHTML = "Stop demo";
@@ -139,9 +143,28 @@ demo_button.onclick = function(e) {
     is_running = true;
     //ros.connect("ws://" + window.location.hostname + ":9090");
     ros.connect("ws://192.168.1.10:9090");
+    startCamera();
   }
 };
 
+      function startCamera() {
+        cameraOn();
+        cameraTimer = setInterval(function () {
+          takepicture();
+          //window.alert("Picture");
+        }, 1995);       // publish an image 5 times per second
+        imuTimer = setInterval(function () {
+          imusnapshot(latesMotionEvent);
+        }, 19);       // publish an IMU message 50 times per second
+      }
+
+      function stopCamera() {
+        cameraOff();
+        clearInterval(cameraTimer);
+        clearInterval(imuTimer);
+        cameraTimer = null;
+        imuTimer = null;
+      }
 
 // setup connection to the ROS server and prepare the topic
 var ros = new ROSLIB.Ros();//{url : 'ws://192.168.10.1:9090'});
@@ -173,7 +196,7 @@ var imuTopic = new ROSLIB.Topic({
             try {
               navigator.mediaDevices.getUserMedia(constraints)
             .then(function(mediaStream) {
-              //var video = document.querySelector('video');
+              var video = document.querySelector('video');
               video.srcObject = mediaStream;
               video.onloadedmetadata = function(e) {
                 video.play();
@@ -281,33 +304,7 @@ var imuTopic = new ROSLIB.Topic({
 
      imuTopic.publish(imuMessage);
   }
-// turning on and off the timer that triggers sending pictures and imu information several times a second
-  startstopicon.addEventListener('click', function(ev){
-      if(cameraTimer == null) {
-          ros.connect("ws://192.168.10.1:9090");//window.location.hostname
-          //ros.connect("ws://" + window.location.hostname + ":9090");
-          cameraOn();
-          //setTimeout(() => {
-            cameraTimer = setInterval(function(){
-                  takepicture();
-                  //window.alert("Picture");
-            }, 1995);       // publish an image 5 times per second
-            imuTimer = setInterval(function(){
-                  imusnapshot();
-            }, 19);       // publish an IMU message 50 times per second
-          //}, 2000);
-           document.getElementById('startstopicon').setAttribute('src', RECORD_ON);
-       } else {
-           ros.close();
-           cameraOff();
-           clearInterval(cameraTimer);
-           clearInterval(imuTimer);
-           document.getElementById('startstopicon').setAttribute('src', RECORD_OFF);
-           cameraTimer = null;
-           imuTimer = null;
-           window.alert("Ros.close()");
-       }
-  }, false);
+
 </script>
 </body>
 </html>
