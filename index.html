@@ -14,6 +14,9 @@
       #demo-div li {line-height: 21px;}
       #demo-div ul {margin-bottom: 0.66rem;}
     </style>
+    <script src="http://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+    <script src="http://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js"></script>    
 </head>
 <body>
 <main role="main" class="container">
@@ -104,6 +107,7 @@ function handleMotion(event) {
   updateFieldIfNotNull('Gyroscope_x', event.rotationRate.beta);
   updateFieldIfNotNull('Gyroscope_y', event.rotationRate.gamma);
   incrementEventCount();
+  imusnapshot(event);
 }
 
 let is_running = false;
@@ -133,27 +137,199 @@ demo_button.onclick = function(e) {
     demo_button.classList.remove('btn-success');
     demo_button.classList.add('btn-danger');
     is_running = true;
+    ros.connect("ws://" + window.location.hostname + ":9090");
   }
 };
 
-/*
-Light and proximity are not supported anymore by mainstream browsers.
-window.addEventListener('devicelight', function(e) {
-   document.getElementById("DeviceLight").innerHTML="AmbientLight current Value: "+e.value+" Max: "+e.max+" Min: "+e.min;
+
+// setup connection to the ROS server and prepare the topic
+var ros = new ROSLIB.Ros();//{url : 'ws://192.168.10.1:9090'});
+
+ros.on('connection', function() { console.log('Connected to websocket server.');});
+
+ros.on('error', function(error) { console.log('Error connecting to websocket server: ', error); window.alert('Error connecting to websocket server'); });
+
+ros.on('close', function() { console.log('Connection to websocket server closed.');});
+
+var imageTopic = new ROSLIB.Topic({
+  ros : ros,
+  name : '/camera/image/compressed',
+  messageType : 'sensor_msgs/CompressedImage'
 });
 
-window.addEventListener('lightlevel', function(e) {
-   document.getElementById("Lightlevel").innerHTML="Light level: "+e.value;
+var imuTopic = new ROSLIB.Topic({
+  ros : ros,
+  name : '/gyro',
+  messageType : 'sensor_msgs/Imu'
 });
 
-window.addEventListener('deviceproximity', function(e) {
-   document.getElementById("DeviceProximity").innerHTML="DeviceProximity current Value: "+e.value+" Max: "+e.max+" Min: "+e.min;
-});
+      var cameraTimer, imuTimer;
+  
+      function cameraOn() {
+          async function getMedia(constraints) {
+            let stream = null;
 
-window.addEventListener('userproximity', function(event) {
-   document.getElementById("UserProximity").innerHTML="UserProximity: "+event.near;
-});
-*/
+            try {
+              navigator.mediaDevices.getUserMedia(constraints)
+            .then(function(mediaStream) {
+              //var video = document.querySelector('video');
+              video.srcObject = mediaStream;
+              video.onloadedmetadata = function(e) {
+                video.play();
+              };
+            })
+            .catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
+              /* use the stream */
+            } catch(err) {
+            /* handle the error */
+          }
+}
+
+          var constraints = {
+            audio: false,
+            video: {
+                width: { min: 640, ideal: 1280, max: 1920 },
+                height: { min: 480, ideal: 720, max: 1080 },
+                facingMode: { ideal: 'environment' },
+                }
+          };
+          getMedia(constraints);
+
+
+   
+  }
+
+
+  function cameraOff() {
+        cameraStream.stop();
+        hasRunOnce = false;
+        takepicture();                  // blank the screen to prevent last image from staying
+    }
+
+// function that is run once scale the height of the video stream to match the configured target width
+  video.addEventListener('canplay', function(ev){
+    if (!hasRunOnce) {
+      height = video.videoHeight / (video.videoWidth/width);
+      video.setAttribute('width', width);
+      video.setAttribute('height', height);
+      canvas.setAttribute('width', width);
+      canvas.setAttribute('height', height);
+      hasRunOnce = true;
+    }
+  }, false);
+
+// function that is run by trigger several times a second
+// takes snapshot of video to canvas, encodes the images as base 64 and sends it to the ROS topic
+  function takepicture() {
+    canvas.width = width;
+    canvas.height = height;
+    console.log('takepicture');
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);   
+ 
+    var data = canvas.toDataURL('image/jpeg');
+    var imageMessage = new ROSLIB.Message({
+        format : "jpeg",
+        data : data.replace("data:image/jpeg;base64,", "")
+    });
+
+    imageTopic.publish(imageMessage);
+  }
+
+ function imusnapshot(event) {
+     var x = event.accelerationIncludingGravity.x
+     var y = event.accelerationIncludingGravity.y
+     var z = event.accelerationIncludingGravity.z
+
+    //event.acceleration.x
+     //event.acceleration.y
+     //event.acceleration.z
+
+     var alpha = event.rotationRate.alpha
+     var beta = event.rotationRate.beta
+     var gamma = event.rotationRate.gamma
+
+     var beta_radian = ((beta + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
+     var gamma_radian = ((gamma + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
+     var alpha_radian = ((alpha + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
+     var eurlerpose = new THREE.Euler(beta_radian, gamma_radian, alpha_radian);
+     var quaternionpose = new THREE.Quaternion;
+     quaternionpose.setFromEuler(eurlerpose);  var imuMessage = new ROSLIB.Message({
+        header : {
+           frame_id : "imu0"
+        },
+        orientation : {
+           x : 0,//quaternionpose.x,
+           y : 0,//quaternionpose.y,
+           z : 0,//quaternionpose.z,
+           w : 1//quaternionpose.w
+        },
+        orientation_covariance : [99999.9, 0.0, 0.0, 0.0, 99999.9, 0.0, 0.0, 0.0, 99999.9],
+        angular_velocity : {
+            x : alpha,
+            y : beta,
+            z : gamma,
+        },
+        angular_velocity_covariance  : [0,0,0,0,0,0,0,0,0],
+        linear_acceleration : {
+           x : x,
+           y : y,
+           z : z,
+        },
+        linear_acceleration_covariance  : [0,0,0,0,0,0,0,0,0],
+     });
+
+     imuTopic.publish(imuMessage);
+  }
+// turning on and off the timer that triggers sending pictures and imu information several times a second
+  startstopicon.addEventListener('click', function(ev){
+      if(cameraTimer == null) {
+          ros.connect("ws://192.168.10.1:9090");//window.location.hostname
+          //ros.connect("ws://" + window.location.hostname + ":9090");
+          cameraOn();
+          //setTimeout(() => {
+            cameraTimer = setInterval(function(){
+                  takepicture();
+                  //window.alert("Picture");
+            }, 1995);       // publish an image 5 times per second
+            imuTimer = setInterval(function(){
+                  imusnapshot();
+            }, 19);       // publish an IMU message 50 times per second
+          //}, 2000);
+           document.getElementById('startstopicon').setAttribute('src', RECORD_ON);
+       } else {
+           ros.close();
+           cameraOff();
+           clearInterval(cameraTimer);
+           clearInterval(imuTimer);
+           document.getElementById('startstopicon').setAttribute('src', RECORD_OFF);
+           cameraTimer = null;
+           imuTimer = null;
+           window.alert("Ros.close()");
+       }
+  }, false);
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </script>
 </body>
