@@ -68,7 +68,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
 
 // setup event handler to capture the orientation event and store the most recent data in a variable
 
-      if (window.DeviceOrientationEvent) {
+      //if (window.DeviceOrientationEvent) {
         // Listen for the deviceorientation event and handle the raw data
         window.addEventListener('deviceorientation', function(eventData) {
           // gamma is the left-to-right tilt in degrees, where right is positive
@@ -81,7 +81,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
           alpha = eventData.alpha
 
           }, false);
-        };
+        //};
 
 // setup event handler to capture the acceleration event and store the most recent data in a variable
 
