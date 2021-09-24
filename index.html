@@ -16,17 +16,17 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
 
 <!-- declare interface and the canvases that will display the video and the still shots -->
 <body>
- <video style="display: inline" autoplay id="video"></video>
+ <video style="display: inline" autoplay muted playsinline  id="video"></video>
  <canvas style="display: inline" id="canvas"></canvas>
  <button id="startstop" style="outline-width: 0; background-color: transparent; border: none"><img id="startstopicon" src=""/></button>
 
 <script>
 
-      document.getElementById('startstopicon').setAttribute('src', RECORD_OFF);
-   
-      //if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
-           DeviceMotionEvent.requestPermission();
-        // }
+  document.getElementById('startstopicon').setAttribute('src', RECORD_OFF);
+
+  if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
+    DeviceMotionEvent.requestPermission();
+  }
 
 
 // setup connection to the ROS server and prepare the topic
@@ -51,71 +51,69 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
   });
 
 
-      var alpha, valpha, z;
-      var beta, vbeta, x;
-      var gamma, vgamma, y;
+  var alpha, valpha, z;
+  var beta, vbeta, x;
+  var gamma, vgamma, y;
 
-      var cameraTimer, imuTimer;
+  var cameraTimer, imuTimer;
 
 
 
-      if (window.DeviceMotionEvent) {
-          window.addEventListener('devicemotion', deviceMotionHandler, false);
-        } else {
-          window.alert("acceleration measurements Not supported.");
-        }
+  if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', deviceMotionHandler, false);
+  } else {
+    window.alert("acceleration measurements Not supported.");
+  }
 
 
 // setup event handler to capture the orientation event and store the most recent data in a variable
 
-      //if (window.DeviceOrientationEvent) {
-        // Listen for the deviceorientation event and handle the raw data
-        window.addEventListener('deviceorientation', function(eventData) {
-          // gamma is the left-to-right tilt in degrees, where right is positive
-          gamma = eventData.gamma;
-          
-          // beta is the front-to-back tilt in degrees, where front is positive
-          beta = eventData.beta;
-          
-          // alpha is the compass direction the device is facing in degrees
-          alpha = eventData.alpha
+  if (window.DeviceOrientationEvent) {
+    // Listen for the deviceorientation event and handle the raw data
+    window.addEventListener('deviceorientation', function(eventData) {
+      // gamma is the left-to-right tilt in degrees, where right is positive
+      gamma = eventData.gamma;
+      
+      // beta is the front-to-back tilt in degrees, where front is positive
+      beta = eventData.beta;
+      
+      // alpha is the compass direction the device is facing in degrees
+      alpha = eventData.alpha
 
-          }, false);
-        //};
+      }, false);
+    };
 
 // setup event handler to capture the acceleration event and store the most recent data in a variable
 
 
-        function deviceMotionHandler(eventData) {
-          // Grab the acceleration from the results
-          var acceleration = eventData.accelerationIncludingGravity;
-          // for portrait front facing camera on S10:
-          //x = acceleration.y;
-          //y = acceleration.x;
-          //z = -acceleration.x;
-          x = acceleration.x;
-          y = acceleration.y;
-          z = -acceleration.z;
+  function deviceMotionHandler(eventData) {
+    // Grab the acceleration from the results
+    var acceleration = eventData.accelerationIncludingGravity;
+    // for portrait front facing camera on S10:
+    //x = acceleration.y;
+    //y = acceleration.x;
+    //z = -acceleration.x;
+    x = acceleration.x;
+    y = acceleration.y;
+    z = -acceleration.z;
 
-          // Grab the rotation rate from the results
-          var rotation = eventData.rotationRate;
-          // original:
-          //vgamma = rotation.gamma;  
-          //vbeta = rotation.beta;
-          //valpha = rotation.alpha;
+    // Grab the rotation rate from the results
+    var rotation = eventData.rotationRate;
+    // original:
+    //vgamma = rotation.gamma;  
+    //vbeta = rotation.beta;
+    //valpha = rotation.alpha;
 
-          // for portrait front facing camera on S10:
-          //vgamma = -rotation.alpha;  
-          //vbeta = -rotation.beta;
-          //valpha = rotation.gamma;
-          
-          // for backface camera on S10, landscape:
-          vgamma = -rotation.beta;  
-          vbeta = rotation.alpha;
-          valpha = -rotation.gamma;
+    // for portrait front facing camera on S10:
+    //vgamma = -rotation.alpha;  
+    //vbeta = -rotation.beta;
+    //valpha = rotation.gamma;
 
-
-}
+    // for backface camera on S10, landscape:
+    vgamma = -rotation.beta;
+    vbeta = rotation.alpha;
+    valpha = -rotation.gamma;
+  }
 
 
 
@@ -130,39 +128,35 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
       cameraStream;
 
 
-  function cameraOn() {
-          async function getMedia(constraints) {
-            let stream = null;
+      function cameraOn() {
+        async function getMedia(constraints) {
+          let stream = null;
 
-            try {
-              navigator.mediaDevices.getUserMedia(constraints)
-            .then(function(mediaStream) {
-              //var video = document.querySelector('video');
-              video.srcObject = mediaStream;
-              video.onloadedmetadata = function(e) {
-                video.play();
-              };
-            })
-            .catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
-              /* use the stream */
-            } catch(err) {
+          try {
+            navigator.mediaDevices.getUserMedia(constraints)
+              .then(function (mediaStream) {
+                //var video = document.querySelector('video');
+                video.srcObject = mediaStream;
+                video.onloadedmetadata = function (e) {
+                  video.play();
+                };
+              })
+              .catch(function (err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
+            /* use the stream */
+          } catch (err) {
             /* handle the error */
           }
-}
-
-          var constraints = {
-            audio: false,
-            video: {
-                width: { min: 640, ideal: 1280, max: 1920 },
-                height: { min: 480, ideal: 720, max: 1080 },
-                facingMode: { ideal: 'environment' },
-                }
-          };
-          getMedia(constraints);
-
-
-   
-  }
+        }
+        var constraints = {
+          audio: false,
+          video: {
+            width: { min: 640, ideal: 1280, max: 1920 },
+            height: { min: 480, ideal: 720, max: 1080 },
+            facingMode: { ideal: 'environment' },
+          }
+        };
+        getMedia(constraints);
+      }
 
 
   function cameraOff() {
@@ -239,32 +233,31 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
      imuTopic.publish(imuMessage);
   }
 // turning on and off the timer that triggers sending pictures and imu information several times a second
-  startstopicon.addEventListener('click', function(ev){
-      if(cameraTimer == null) {
-          ros.connect("ws://192.168.10.1:9090");//window.location.hostname
-          //ros.connect("ws://" + window.location.hostname + ":9090");
-          cameraOn();
-          //setTimeout(() => {
-            cameraTimer = setInterval(function(){
-                  takepicture();
-                  //window.alert("Picture");
-            }, 1995);       // publish an image 5 times per second
-            imuTimer = setInterval(function(){
-                  imusnapshot();
-            }, 19);       // publish an IMU message 50 times per second
-          //}, 2000);
-           document.getElementById('startstopicon').setAttribute('src', RECORD_ON);
-       } else {
-           ros.close();
-           cameraOff();
-           clearInterval(cameraTimer);
-           clearInterval(imuTimer);
-           document.getElementById('startstopicon').setAttribute('src', RECORD_OFF);
-           cameraTimer = null;
-           imuTimer = null;
-           window.alert("Ros.close()");
-       }
-  }, false);
+    startstopicon.addEventListener('click', function (ev) {
+      if (cameraTimer == null) {
+        ros.connect("ws://192.168.10.1:9090");//window.location.hostname
+        //ros.connect("ws://" + window.location.hostname + ":9090");
+        cameraOn();
+        cameraTimer = setInterval(function () {
+          takepicture();
+          //window.alert("Picture");
+        }, 95);       // publish an image 10 fps
+        imuTimer = setInterval(function () {
+          imusnapshot();
+        }, 9);       // publish an IMU message 100 hz
+
+        document.getElementById('startstopicon').setAttribute('src', RECORD_ON);
+      } else {
+        ros.close();
+        cameraOff();
+        clearInterval(cameraTimer);
+        clearInterval(imuTimer);
+        document.getElementById('startstopicon').setAttribute('src', RECORD_OFF);
+        cameraTimer = null;
+        imuTimer = null;
+        window.alert("Ros.close()");
+      }
+    }, false);
 </script>
 </body>
 </html>
