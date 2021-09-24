@@ -21,7 +21,7 @@
 <body>
 <main role="main" class="container">
   <!-- declare interface and the canvases that will display the video and the still shots -->
-  <video style="display: inline" autoplay id="video"></video>
+  <video style="display: inline" autoplay muted playsinline id="video"></video>
   <canvas style="display: inline" id="canvas"></canvas>
 
 <h1 align="left">JavaScript ROS Node publishing Camera and IMU sensors</h1>
@@ -188,40 +188,38 @@ var imuTopic = new ROSLIB.Topic({
   messageType : 'sensor_msgs/Imu'
 });
 
-      var cameraTimer, imuTimer;
+var cameraTimer, imuTimer;
   
-      function cameraOn() {
-          async function getMedia(constraints) {
-            let stream = null;
+function cameraOn() {
+    async function getMedia(constraints) {
+      let stream = null;
 
-            try {
-              navigator.mediaDevices.getUserMedia(constraints)
-            .then(function(mediaStream) {
-              var video = document.querySelector('#video');
-              video.srcObject = mediaStream;
-              video.onloadedmetadata = function(e) {
-                video.play();
-              };
-            })
-            .catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
-              /* use the stream */
-            } catch(err) {
-            /* handle the error */
-          }
-}
+      try {
+        navigator.mediaDevices.getUserMedia(constraints)
+          .then(function (mediaStream) {
+            var video = document.querySelector('#video');
+            video.srcObject = mediaStream;
+            video.onloadedmetadata = function (e) {
+              video.play();
+            };
+          })
+          .catch(function (err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
+        /* use the stream */
+      } catch (err) {
+        /* handle the error */
+      }
+    }
 
-          var constraints = {
-            audio: false,
-            video: {
-                width: { min: 640, ideal: 1280, max: 1920 },
-                height: { min: 480, ideal: 720, max: 1080 },
-                facingMode: { ideal: 'environment' },
-                }
-          };
-          getMedia(constraints);
+    const constraints = {
+      audio: false,
+      video: {
+        width: { min: 640, ideal: 1280, max: 1920 },
+        height: { min: 480, ideal: 720, max: 1080 },
+        facingMode: { ideal: 'environment' },
+      }
+    };
 
-
-   
+    getMedia(constraints);
   }
 
 
