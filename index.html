@@ -137,7 +137,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
             try {
               navigator.mediaDevices.getUserMedia(constraints)
             .then(function(mediaStream) {
-              var video = document.querySelector('video');
+              //var video = document.querySelector('video');
               video.srcObject = mediaStream;
               video.onloadedmetadata = function(e) {
                 video.play();
@@ -262,6 +262,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
            document.getElementById('startstopicon').setAttribute('src', RECORD_OFF);
            cameraTimer = null;
            imuTimer = null;
+           window.alert("Ros.close()");
        }
   }, false);
 </script>
