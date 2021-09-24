@@ -153,10 +153,10 @@ demo_button.onclick = function(e) {
           cameraTimer = setInterval(function () {
             takepicture();
             //window.alert("Picture");
-          }, 1995);       // publish an image 5 times per second
+          }, 45);       // publish images at 10 fps
           imuTimer = setInterval(function () {
             imusnapshot(latesMotionEvent);
-          }, 19);       // publish an IMU message 50 times per second
+          }, 4);       // publish an IMU message at 200 hz
         }
 
         function stopCamera() {
