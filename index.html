@@ -140,7 +140,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
               //var video = document.querySelector('video');
               video.srcObject = mediaStream;
               video.onloadedmetadata = function(e) {
-                //video.play();
+                video.play();
               };
             })
             .catch(function(err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
@@ -247,7 +247,8 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
           //setTimeout(() => {
             cameraTimer = setInterval(function(){
                   takepicture();
-            }, 95);       // publish an image 5 times per second
+                  window.alert("Picture");
+            }, 1995);       // publish an image 5 times per second
             imuTimer = setInterval(function(){
                   imusnapshot();
             }, 19);       // publish an IMU message 50 times per second
