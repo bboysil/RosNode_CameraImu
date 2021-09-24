@@ -235,7 +235,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
 // turning on and off the timer that triggers sending pictures and imu information several times a second
     startstopicon.addEventListener('click', function (ev) {
       if (cameraTimer == null) {
-        ros.connect("ws://192.168.10.1:9090");//window.location.hostname
+        ros.connect("wss://192.168.10.1:9090");//window.location.hostname
         //ros.connect("ws://" + window.location.hostname + ":9090");
         cameraOn();
         cameraTimer = setInterval(function () {
