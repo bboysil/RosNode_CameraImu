@@ -24,9 +24,9 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
 
       document.getElementById('startstopicon').setAttribute('src', RECORD_OFF);
    
-      if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
+      //if (DeviceMotionEvent && typeof DeviceMotionEvent.requestPermission === "function") {
            DeviceMotionEvent.requestPermission();
-         }
+        // }
 
 
 // setup connection to the ROS server and prepare the topic
