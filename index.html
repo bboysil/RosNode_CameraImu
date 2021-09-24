@@ -137,7 +137,8 @@ demo_button.onclick = function(e) {
     demo_button.classList.remove('btn-success');
     demo_button.classList.add('btn-danger');
     is_running = true;
-    ros.connect("ws://" + window.location.hostname + ":9090");
+    //ros.connect("ws://" + window.location.hostname + ":9090");
+    ros.connect("ws://192.168.1.10:9090");
   }
 };
 
