@@ -121,12 +121,12 @@ demo_button.onclick = function(e) {
   e.preventDefault();
   
   // Request permission for iOS 13+ devices
-  //if (
-  //  DeviceMotionEvent &&
-  //  typeof DeviceMotionEvent.requestPermission === "function"
-  //) {
-  //  DeviceMotionEvent.requestPermission();
-  //}
+  if (
+    DeviceMotionEvent &&
+    typeof DeviceMotionEvent.requestPermission === "function"
+  ) {
+    DeviceMotionEvent.requestPermission();
+  }
   
   if (is_running) {
     window.removeEventListener("devicemotion", handleMotion);
