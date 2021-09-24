@@ -191,79 +191,79 @@ var imuTopic = new ROSLIB.Topic({
 var cameraTimer, imuTimer;
   
 function cameraOn() {
-    async function getMedia(constraints) {
-      let stream = null;
+  async function getMedia(constraints) {
+    let stream = null;
 
-      try {
-        navigator.mediaDevices.getUserMedia(constraints)
-          .then(function (mediaStream) {
-            var video = document.querySelector('#video');
-            video.srcObject = mediaStream;
-            video.onloadedmetadata = function (e) {
-              video.play();
-            };
-          })
-          .catch(function (err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
-        /* use the stream */
-      } catch (err) {
-        /* handle the error */
-      }
+    try {
+      navigator.mediaDevices.getUserMedia(constraints)
+        .then(function (mediaStream) {
+          var video = document.querySelector('#video');
+          video.srcObject = mediaStream;
+          video.onloadedmetadata = function (e) {
+            video.play();
+          };
+        })
+        .catch(function (err) { console.log(err.name + ": " + err.message); }); // always check for errors at the end.
+      /* use the stream */
+    } catch (err) {
+      /* handle the error */
     }
-
-    const constraints = {
-      audio: false,
-      video: {
-        width: { min: 640, ideal: 1280, max: 1920 },
-        height: { min: 480, ideal: 720, max: 1080 },
-        facingMode: { ideal: 'environment' },
-      }
-    };
-
-    getMedia(constraints);
   }
 
-
-  function cameraOff() {
-        cameraStream.stop();
-        hasRunOnce = false;
-        takepicture();                  // blank the screen to prevent last image from staying
+  const constraints = {
+    audio: false,
+    video: {
+      width: { min: 640, ideal: 1280, max: 1920 },
+      height: { min: 480, ideal: 720, max: 1080 },
+      facingMode: { ideal: 'environment' },
     }
+  };
 
-    var hasRunOnce = false,
-      video        = document.querySelector('#video'),
-      //       = document.querySelector('#canvas'),
-      width = 640,
-      height,           // calculated once video stream size is known
-      cameraStream;
+  getMedia(constraints);
+}
+
+
+function cameraOff() {
+      cameraStream.stop();
+      hasRunOnce = false;
+      takepicture();                  // blank the screen to prevent last image from staying
+  }
+
+  var hasRunOnce = false,
+    video        = document.querySelector('#video'),
+    canvas       = document.querySelector('#canvas'),
+    width = 640,
+    height,           // calculated once video stream size is known
+    cameraStream;
 
 // function that is run once scale the height of the video stream to match the configured target width
-  video.addEventListener('canplay', function(ev){
-    if (!hasRunOnce) {
-      height = video.videoHeight / (video.videoWidth/width);
-      video.setAttribute('width', width);
-      video.setAttribute('height', height);
-      canvas.setAttribute('width', width);
-      canvas.setAttribute('height', height);
-      hasRunOnce = true;
-    }
-  }, false);
+video.addEventListener('canplay', function(ev){
+  if (!hasRunOnce) {
+    height = video.videoHeight / (video.videoWidth/width);
+    video.setAttribute('width', width);
+    video.setAttribute('height', height);
+    canvas.setAttribute('width', width);
+    canvas.setAttribute('height', height);
+    hasRunOnce = true;
+  }
+}, false);
 
 // function that is run by trigger several times a second
 // takes snapshot of video to canvas, encodes the images as base 64 and sends it to the ROS topic
-  function takepicture() {
-    canvas.width = width;
-    canvas.height = height;
-    console.log('takepicture');
-    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);   
- 
-    var data = canvas.toDataURL('image/jpeg');
-    var imageMessage = new ROSLIB.Message({
-        format : "jpeg",
-        data : data.replace("data:image/jpeg;base64,", "")
-    });
+function takepicture() {
+  canvas.width = width;
+  canvas.height = height;
+  console.log('takepicture');
+  canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);   
 
-    imageTopic.publish(imageMessage);
-  }
+  var data = canvas.toDataURL('image/jpeg');
+  var imageMessage = new ROSLIB.Message({
+      format : "jpeg",
+      data : data.replace("data:image/jpeg;base64,", "")
+  });
+
+  imageTopic.publish(imageMessage);
+}
 
  function imusnapshot(event) {
      var x = event.accelerationIncludingGravity.x
