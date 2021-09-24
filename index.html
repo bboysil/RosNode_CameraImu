@@ -20,6 +20,9 @@
 </head>
 <body>
 <main role="main" class="container">
+  <!-- declare interface and the canvases that will display the video and the still shots -->
+<video style="display: none" autoplay id="video"></video>
+<canvas style="display: none" id="canvas"></canvas>
 
 <h1 align="left">JavaScript Sensor Access Demo</h1>
 <p><b>This demo page should be run from a mobile phone or a tablet.</b></p>
@@ -118,12 +121,12 @@ demo_button.onclick = function(e) {
   e.preventDefault();
   
   // Request permission for iOS 13+ devices
-  if (
-    DeviceMotionEvent &&
-    typeof DeviceMotionEvent.requestPermission === "function"
-  ) {
-    DeviceMotionEvent.requestPermission();
-  }
+  //if (
+  //  DeviceMotionEvent &&
+  //  typeof DeviceMotionEvent.requestPermission === "function"
+  //) {
+  //  DeviceMotionEvent.requestPermission();
+  //}
   
   if (is_running) {
     window.removeEventListener("devicemotion", handleMotion);
@@ -196,7 +199,7 @@ var imuTopic = new ROSLIB.Topic({
             try {
               navigator.mediaDevices.getUserMedia(constraints)
             .then(function(mediaStream) {
-              var video = document.querySelector('video');
+              var video = document.querySelector('#video');
               video.srcObject = mediaStream;
               video.onloadedmetadata = function(e) {
                 video.play();
@@ -229,6 +232,13 @@ var imuTopic = new ROSLIB.Topic({
         hasRunOnce = false;
         takepicture();                  // blank the screen to prevent last image from staying
     }
+
+    var hasRunOnce = false,
+      video        = document.querySelector('#video'),
+      canvas       = document.querySelector('#canvas'),
+      width = 640,
+      height,           // calculated once video stream size is known
+      cameraStream;
 
 // function that is run once scale the height of the video stream to match the configured target width
   video.addEventListener('canplay', function(ev){
