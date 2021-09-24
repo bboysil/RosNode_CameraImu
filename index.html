@@ -30,7 +30,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
 
 
 // setup connection to the ROS server and prepare the topic
-  var ros = new ROSLIB.Ros({url : 'ws://192.168.10.1:9090'});
+  var ros = new ROSLIB.Ros();//{url : 'ws://192.168.10.1:9090'});
 
   ros.on('connection', function() { console.log('Connected to websocket server.');});
 
@@ -247,7 +247,7 @@ var RECORD_ON ="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4X
           //setTimeout(() => {
             cameraTimer = setInterval(function(){
                   takepicture();
-                  window.alert("Picture");
+                  //window.alert("Picture");
             }, 1995);       // publish an image 5 times per second
             imuTimer = setInterval(function(){
                   imusnapshot();
