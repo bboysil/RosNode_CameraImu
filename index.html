@@ -231,13 +231,12 @@ function cameraOff() {
       });
       video.srcObject = null;
       takepicture();                  // blank the screen to prevent last image from staying
-      window.alert("Stopped");
   }
 
   var hasRunOnce = false,
     video        = document.querySelector('#video'),
     canvas       = document.querySelector('#canvas'),
-    width = 160,
+    width = 1280,
     height;           // calculated once video stream size is known
 
 // function that is run once scale the height of the video stream to match the configured target width
