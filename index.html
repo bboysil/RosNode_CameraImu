@@ -244,8 +244,8 @@ video.addEventListener('canplay', function(ev){
   if (!hasRunOnce) {
     ratio = video.videoHeight / (video.videoWidth);
     height = width * ratio; // height is set up right above this function
-    video.setAttribute('width', width);
-    video.setAttribute('height', height);
+    video.setAttribute('width', width/10);
+    video.setAttribute('height', height/10);
     canvas.setAttribute('width', width);
     canvas.setAttribute('height', height);
     hasRunOnce = true;
