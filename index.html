@@ -23,15 +23,16 @@
   <!-- declare interface and the canvases that will display the video and the still shots -->
   <video style="display: inline" autoplay muted playsinline id="video"></video>
   <canvas style="display: inline" id="canvas"></canvas>
-
+<!--
 <h1 align="left">JavaScript ROS Node publishing Camera and IMU sensors</h1>
 <p><b>Run from mobile phone or tablet device.</b></p>
 <p>This page access sensor data from mobile devices using <a href="https://developer.mozilla.org/en-US/docs/Web/Events/deviceorientation"><i>deviceorientation</i></a> and <a href="https://developer.mozilla.org/en-US/docs/Web/Events/devicemotion"><i>devicemotion</i></a> events.</p>
 
 <p><i>deviceorientation</i> provides <i>alpha</i>, <i>beta</i> and <i>gamma</i> components which correspond to orientation along the Z, X and Y axes, respectively.</p><p><i>devicemotion</i> provides acceleration and rotation rate along three axes using MEMS accelerometers and gyroscopes.</p>
-
+  -->
 <div class="p-3 mb-2 bg-secondary" id="demo-div">
-<a id="start_demo" class="btn btn-lg btn-success py-1" href="#" role="button">Start the demo</a>
+
+<a id="start_demo" class="btn btn-lg btn-success py-1" href="#" role="button">Start</a>
 <p style="margin-top:1rem;">Num. of datapoints: <span class="badge badge-warning" id="num-observed-events">0</span></p>
 
 
@@ -119,7 +120,7 @@ demo_button.onclick = function(e) {
   
   // Request permission for iOS 13+ devices
   if (
-    DeviceMotionEvent &&
+    typeof DeviceMotionEvent != 'undefined' &&
     typeof DeviceMotionEvent.requestPermission === "function"
   ) {
     DeviceMotionEvent.requestPermission();
@@ -140,7 +141,7 @@ demo_button.onclick = function(e) {
 
     window.addEventListener("devicemotion", handleMotion);
     window.addEventListener("deviceorientation", handleOrientation);
-    document.getElementById("start_demo").innerHTML = "Stop demo";
+    document.getElementById("start_demo").innerHTML = "Stop";
     demo_button.classList.remove('btn-success');
     demo_button.classList.add('btn-danger');
     is_running = true;
@@ -156,7 +157,7 @@ demo_button.onclick = function(e) {
           }, 65);       // publish images at 15 fps
           imuTimer = setInterval(function () {
             imusnapshot(latesMotionEvent);
-          }, 4);       // publish an IMU message at 200 hz
+          }, 3);       // publish an IMU message at 200 hz
         }
 
         function stopCamera() {
@@ -224,22 +225,26 @@ function cameraOn() {
 
 
 function cameraOff() {
-      cameraStream.stop();
       hasRunOnce = false;
+      video.srcObject.getTracks().forEach(function(track) {
+        track.stop();
+      });
+      video.srcObject = null;
       takepicture();                  // blank the screen to prevent last image from staying
+      window.alert("Stopped");
   }
 
   var hasRunOnce = false,
     video        = document.querySelector('#video'),
     canvas       = document.querySelector('#canvas'),
-    width = 640,
-    height,           // calculated once video stream size is known
-    cameraStream;
+    width = 160,
+    height;           // calculated once video stream size is known
 
 // function that is run once scale the height of the video stream to match the configured target width
 video.addEventListener('canplay', function(ev){
   if (!hasRunOnce) {
-    height = video.videoHeight / (video.videoWidth/width);
+    ratio = video.videoHeight / (video.videoWidth);
+    height = width * ratio; // height is set up right above this function
     video.setAttribute('width', width);
     video.setAttribute('height', height);
     canvas.setAttribute('width', width);
