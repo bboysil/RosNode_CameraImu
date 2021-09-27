@@ -299,9 +299,9 @@ function takepicture() {
         },
         orientation_covariance : [99999.9, 0.0, 0.0, 0.0, 99999.9, 0.0, 0.0, 0.0, 99999.9],
         angular_velocity : {
-            x : alpha,
-            y : -beta,
-            z : -gamma,
+            x : alpha / 360 * 2 * Math.PI ,
+            y : -beta / 360 * 2 * Math.PI ,
+            z : -gamma / 360 * 2 * Math.PI ,
         },
         angular_velocity_covariance  : [0,0,0,0,0,0,0,0,0],
         linear_acceleration : {
