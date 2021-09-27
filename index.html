@@ -157,7 +157,7 @@ demo_button.onclick = function(e) {
           }, 65);       // publish images at 15 fps
           imuTimer = setInterval(function () {
             imusnapshot(latesMotionEvent);
-          }, 3);       // publish an IMU message at 200 hz
+          }, 2);       // publish an IMU message at 200 hz
         }
 
         function stopCamera() {
