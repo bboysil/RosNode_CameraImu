@@ -286,14 +286,15 @@ function takepicture() {
      var beta = event.rotationRate.beta
      var gamma = event.rotationRate.gamma
 
-     var beta_radian = ((beta + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
-     var gamma_radian = ((gamma + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
-     var alpha_radian = ((alpha + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
-     var eurlerpose = new THREE.Euler(beta_radian, gamma_radian, alpha_radian);
-     var quaternionpose = new THREE.Quaternion;
-     quaternionpose.setFromEuler(eurlerpose);  var imuMessage = new ROSLIB.Message({
+     //var beta_radian = ((beta + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
+     //var gamma_radian = ((gamma + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
+     //var alpha_radian = ((alpha + 360) / 360 * 2 * Math.PI) % (2 * Math.PI);
+     //var eurlerpose = new THREE.Euler(beta_radian, gamma_radian, alpha_radian);
+     //var quaternionpose = new THREE.Quaternion;
+     //quaternionpose.setFromEuler(eurlerpose);  
+     var imuMessage = new ROSLIB.Message({
         header : {
-           frame_id : "imu0"
+           frame_id : "imu4"
         },
         orientation : {
            x : 0,//quaternionpose.x,
