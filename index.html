@@ -111,7 +111,7 @@ function handleMotion(event) {
   //updateFieldIfNotNull('Gyroscope_y', event.rotationRate.gamma);
   incrementEventCount();
   latesMotionEvent = event;
-  //imusnapshot(latesMotionEvent);
+  imusnapshot(latesMotionEvent);
 }
 
 let is_running = false;
@@ -155,9 +155,9 @@ demo_button.onclick = function(e) {
           cameraTimer = setInterval(function () {
             takepicture();
             //window.alert("Picture");
-          }, 98);       // publish images at 15 fps
+          }, 66);       // publish images at 15 fps
           imuTimer = setInterval(function () {
-            imusnapshot(latesMotionEvent);
+            //imusnapshot(latesMotionEvent);
           }, 1);       // publish an IMU message at 200 hz
         }
 
