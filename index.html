@@ -263,6 +263,9 @@ function takepicture() {
 
   var data = canvas.toDataURL('image/jpeg');
   var imageMessage = new ROSLIB.Message({
+      header : {
+           frame_id : "cam0"
+        },
       format : "jpeg",
       data : data.replace("data:image/jpeg;base64,", "")
   });
