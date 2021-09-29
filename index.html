@@ -138,7 +138,8 @@ demo_button.onclick = function(e) {
     ros.close();
   } else {
     //ros.connect("ws://" + window.location.hostname + ":9090");
-    ros.connect("ws://192.168.1.10:9090");   
+    //ros.connect("ws://192.168.1.10:9090"); 
+    ros.connect("ws://192.168.222.61:9090");
 
     window.addEventListener("devicemotion", handleMotion);
     window.addEventListener("deviceorientation", handleOrientation);
@@ -294,7 +295,7 @@ function takepicture() {
      //quaternionpose.setFromEuler(eurlerpose);  
      var imuMessage = new ROSLIB.Message({
         header : {
-           frame_id : "imu4"
+           frame_id : "imu"
         },
         orientation : {
            x : 0,//quaternionpose.x,
